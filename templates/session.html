@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sample Home Page</title>
+</head>
+<body>
+ Calls a function on the page load
+<element onload="myfunction_onload">
+
+<! -- This script runs the python script on the page load -->
+<script>
+    function myfunction_onload(){
+        $.ajax({
+            url: "print.py",
+             context: document.body
+            })
+        }
+    </script>
+
+</body>
+</html>

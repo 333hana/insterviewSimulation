@@ -5,13 +5,12 @@ import librosa
 from array import array
 from matplotlib import pyplot as plt
 import IPython.display as ipd
-import time
-from docx2pdf import convert
 import numpy as np
 from unittest.main import main
 import matplotlib.pyplot as plt
-from keras.models import model_from_json
+from tensorflow.keras.models import model_from_json
 from multiprocessing import Process
+
 
 class volume_meter:
     def __init__(self, path):
@@ -19,8 +18,8 @@ class volume_meter:
         self.HOP_LENGTH = 512
         self.path = path
     
-    def volume(self):
-        ipd.Audio(self.path)
+    def volume(self,uid):
+        #ipd.Audio(self.path)
         debussy, sr = librosa.load(self.path)
         sc_debussy = librosa.feature.spectral_centroid(y=debussy, sr=sr, n_fft= self.FRAME_SIZE, hop_length=self.HOP_LENGTH)[0]
         sc_debussy.shape
@@ -34,9 +33,9 @@ class volume_meter:
         plt.xlabel('Time (sec)')
         plt.ylabel('vloume')
         plt.legend(bbox_to_anchor = (0.5, 1.1), loc = 'upper center')
-        vm = plt.savefig('imags/volume of voice.png')
+        vm = plt.savefig(uid+'/volume of voice.png')
         return vm
 
 if __name__== "__main__":
-    vm = volume_meter("temp_audio.wav")
-    vm.volume();
+    vm = volume_meter('records/output.wav')
+    vm.volume("0");

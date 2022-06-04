@@ -12,14 +12,14 @@ class VideoRecorder():
 	
 	
 	# Video class based on openCV 
-	def __init__(self,cap):
+	def __init__(self,cap,foldername):
 		
 		self.open = True
 		self.device_index = 0
 		self.fps = 6               # fps should be the minimum constant rate at which the camera can
 		self.fourcc = "MJPG"       # capture images (with no decrease in speed over time; testing is required)4-character code of codec used to compress the frames.
 		self.frameSize = (640,480) # video formats and sizes also depend and vary according to the camera used
-		self.video_filename = "temp_video.avi"
+		self.video_filename = foldername+"/temp_video.avi"
 		self.video_cap = cap
 		self.video_writer = cv2.VideoWriter_fourcc(*self.fourcc)
 		self.video_out = cv2.VideoWriter(self.video_filename, self.video_writer, self.fps, self.frameSize)
@@ -36,7 +36,10 @@ class VideoRecorder():
 		
 		
 		while(self.open==True):
-			ret, video_frame = self.video_cap.read()
+    			
+			ret = False
+			while not(ret):
+				ret, video_frame = self.video_cap.read()
 			if (ret==True):
 				
 					self.video_out.write(video_frame)
@@ -61,7 +64,7 @@ class VideoRecorder():
 			print("I closed opened video thread")
 			
 		else: 
-			pass
+			print("videonotopened");pass
 
 
 	# Launches the video recording function using a thread			
@@ -77,14 +80,14 @@ class AudioRecorder():
 	
 
     # Audio class based on pyAudio and Wave
-    def __init__(self):
+    def __init__(self,foldername):
         
         self.open = True
         self.rate = 44100
         self.frames_per_buffer = 1024
         self.channels = 2
         self.format = pyaudio.paInt16
-        self.audio_filename = "temp_audio.wav"
+        self.audio_filename = foldername+"/temp_audio.wav"
         self.audio = pyaudio.PyAudio()
         self.stream = self.audio.open(format=self.format,
                                       channels=self.channels,
@@ -136,9 +139,9 @@ def start_AVrecording(filename,cap):
 				
 	global video_thread
 	global audio_thread
-	
-	video_thread = VideoRecorder(cap)
-	audio_thread = AudioRecorder()
+
+	video_thread = VideoRecorder(cap,filename)
+	audio_thread = AudioRecorder(filename)
 
 	audio_thread.start()
 	video_thread.start()
@@ -166,21 +169,21 @@ def stop_AVrecording(filename):
 
 	
 #	 Merging audio and video signal
-	
+	cmd = "cd"+ filename
 	if abs(recorded_fps - 6) >= 0.01:    # If the fps rate was higher/lower than expected, re-encode it to the expected
 										
 		print ("Re-encoding")
-		cmd = "ffmpeg -r " + str(recorded_fps) + " -i temp_video.avi -pix_fmt yuv420p -r 6 temp_video2.avi"
+		cmd = "ffmpeg -r " + str(recorded_fps) + " -i " + filename+ "/temp_video.avi -pix_fmt yuv420p -r 6 " + filename+ "/temp_video2.avi"
 		subprocess.call(cmd, shell=True)
 	
 		print ("Muxing")
-		cmd = "ffmpeg -ac 2 -channel_layout stereo -i temp_audio.wav -i temp_video2.avi -pix_fmt yuv420p " + filename + ".avi"
+		cmd = "ffmpeg -ac 2 -channel_layout stereo -i " + filename+ "/temp_audio.wav -i " + filename+ "/temp_video2.avi -pix_fmt yuv420p " + filename+ "/final.avi"
 		subprocess.call(cmd, shell=True)
 	
 	else:
 		
 		print( "Normal recording\nMuxing")
-		cmd = "ffmpeg -ac 2 -channel_layout stereo -i temp_audio.wav -i temp_video.avi -pix_fmt yuv420p " + filename + ".avi"
+		cmd = "ffmpeg -ac 2 -channel_layout stereo -i " + filename+ "/temp_audio.wav -i " + filename+ "/temp_video.avi -pix_fmt yuv420p "  + filename+ "/final.avi"
 		subprocess.call(cmd, shell=True)
 
 		print ("..")
@@ -191,7 +194,9 @@ def stop_AVrecording(filename):
 # Required and wanted processing of final files
 def file_manager(filename):
 
+	
 	local_path = os.getcwd()
+
 
 	if os.path.exists(str(local_path) + "/temp_audio.wav"):
 		os.remove(str(local_path) + "/temp_audio.wav")
@@ -209,13 +214,14 @@ def file_manager(filename):
 
 	
 if __name__== "__main__":
-	
-	filename = "Default_user"	
+    	
+	filename = "0"
+	cmd = "cd "+filename	
 	file_manager(filename)
 	
-	start_AVrecording(filename)  
+	start_AVrecording(filename,cv2.VideoCapture(0))  
 	
-	time.sleep(10)
+	time.sleep(3)
 	
 	stop_AVrecording(filename)
 	print ("Done")

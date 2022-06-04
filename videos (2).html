@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .hidden {
+        position: absolute;
+        top: -10000px;
+        left: -10000px;
+    }
+    
+    video {
+        height: 100vh;
+        width: 100%;
+        object-fit: fill;
+        position: absolute;
+    }
+</style>
+<video id="q0" preload="auto" class="hidden">
+  <source src="../static/Hi, I am your interviewer, are you ready for questions.mp4" type="video/mp4">
+</video>
+<video id="q1" preload="auto" class="hidden">
+  <source src="../static/1.mp4" type="video/mp4">
+</video>
+<video id="q2" preload="auto" class="hidden">
+  <source src="../static/2.mp4" type="video/mp4">
+</video>
+<video id="q3" preload="auto" class="hidden">
+     <source src="../static/3.mp4" type="video/mp4">
+</video>
+<video id="q4" preload="auto" class="hidden">
+     <source src="../static/4.mp4" type="video/mp4">
+</video>
+<video id="q5" preload="auto" class="hidden">
+     <source src="../static/5.mp4" type="video/mp4">
+</video>
+<video id="q6" preload="auto" class="hidden">
+     <source src="../static/6.mp4" type="video/mp4">
+</video>
+<video id="q7" preload="auto" class="hidden">
+     <source src="../static/7.mp4" type="video/mp4">
+</video>
+<video id="q8" preload="auto" class="hidden">
+     <source src="../static/8.mp4" type="video/mp4">
+</video>
+<video id="q9" preload="auto" class="hidden">
+     <source src="../static/9.mp4" type="video/mp4">
+</video>
+<video id="q10" preload="auto" class="hidden">
+     <source src="../static/10.mp4" type="video/mp4">
+</video>
+<video id="q11" preload="auto" class="hidden">
+     <source src="../static/11.mp4" type="video/mp4">
+</video>
+<video id="q12" preload="auto" class="hidden">
+     <source src="../static/12.mp4" type="video/mp4">
+</video>
+<video id="q13" preload="auto" class="hidden">
+     <source src="../static/13.mp4" type="video/mp4">
+</video>
+<video id="q14" preload="auto" class="hidden">
+     <source src="../static/14.mp4" type="video/mp4">
+</video>
+<video id="q15" preload="auto" class="hidden">
+     <source src="../static/15.mp4" type="video/mp4">
+</video>
+<video id="q16" preload="auto" class="hidden">
+     <source src="../static/16.mp4" type="video/mp4">
+</video>
+<video id="q17" preload="auto" class="hidden">
+     <source src="../static/17.mp4" type="video/mp4">
+</video>
+<video id="q18" preload="auto" class="hidden">
+     <source src="../static/18.mp4" type="video/mp4">
+</video>
+<video id="q19" preload="auto" class="hidden">
+     <source src="../static/19.mp4" type="video/mp4">
+</video>
+<video id="q20" preload="auto" class="hidden">
+     <source src="../static/20.mp4" type="video/mp4">
+</video>
+<video id="q21" preload="auto" class="hidden">
+     <source src="../static/21.mp4" type="video/mp4">
+</video>
+<video id="l3" preload="auto" class="hidden">
+     <source src="../static/Wait1.mp4" type="video/mp4">
+</video>
+<video id="l1" preload="auto" class="hidden">
+     <source src="../static/Wait5.mp4" type="video/mp4">
+</video>
+<video id="l2" preload="auto" class="hidden">
+     <source src="../static/l2.mp4" type="video/mp4">
+</video>
+<textarea id="repeat" rows="4" cols="50"></textarea>
+<textarea id="ready" rows="4" cols="50"></textarea>
+<button onclick="playPause()">Play/Pause</button>
+
+<element onload="start_session"></element>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script src="../static/harck.js"></script>
+
+<body>
+    <script>
+        function start_session() {
+            $.ajax({
+                url: "/session",
+                context: document.body
+            })
+        }
+
+        function start_speech() {
+            $.ajax({
+                url: "/speech",
+                context: document.body,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(q_index.toString())
+            })
+        }
+
+        function stop_speech() {
+            $.ajax({
+                url: "/stop_speech",
+                type: "GET",
+                context: document.body
+            })
+        }
+
+        function start_fer() {
+            $.ajax({
+                url: "/start_fer",
+                context: document.body,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(q_index.toString())
+            })
+        }
+
+        function send_content() {
+            $.ajax({
+                url: "/content",
+                context: document.body,
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(Content.toString())
+            })
+        }
+
+        function stop_fer() {
+            $.ajax({
+                url: "/stop_fer",
+                type: "GET",
+                context: document.body
+            })
+        }
+
+        function start_all() {
+            $.ajax({
+                url: "/start_parllel",
+                context: document.body
+            })
+        }
+
+        function stop_all() {
+            $.ajax({
+                url: "/stop_parllel",
+                context: document.body
+            })
+        }
+
+        function qs2flask() {
+            qs_dict = {}
+            for (i = 0; i < qs.length; i++) {
+                qs_dict[i] = qs[i];
+            }
+
+            const s = JSON.stringify(qs_dict); // Stringify converts a JavaScript object or value to a JSON string
+            window.alert(s)
+            $.ajax({
+                url: "/session_qs",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(s)
+            });
+
+        }
+
+        function start_posture() {
+            $.ajax({
+                url: "/start_posture",
+                type: "GET",
+                context: document.body
+            })
+
+        }
+
+        function start_eye() {
+            $.ajax({
+                url: "/start_eye",
+                type: "GET",
+                context: document.body
+            })
+
+        }
+
+        function start_record() {
+            $.ajax({
+                url: "/start_record",
+                type: "GET",
+                context: document.body
+            })
+
+        }
+
+        function stop_posture() {
+            $.ajax({
+                url: "/stop_posture",
+                type: "GET",
+                context: document.body
+            })
+
+        }
+
+        function stop_eye() {
+            $.ajax({
+                url: "/stop_eye",
+                type: "GET",
+                context: document.body
+            })
+        }
+
+        function stop_record() {
+            $.ajax({
+                url: "/stop_record",
+                type: "GET",
+                context: document.body
+            })
+
+        }
+    </script>
+</body>
+<script>
+    function end() {
+        //stop_analysing();
+        stop_record();
+        stop_posture();
+        stop_eye();
+        //send_content();
+        console.log("session ended");
+        console.log("final", Content);
+        window.sessionStorage.setItem('end', "true");
+        window.location.replace("http://127.0.0.1:5000/");
+
+    }
+    window.addEventListener('load', (event) => {
+        //start_eye()
+        window.sessionStorage.setItem('u', "hana");
+    });
+    q_index = -1;
+    l_index = 1;
+    l_count = 3;
+    let q0 = document.getElementById("q0");
+    let r = document.getElementById("repeat");
+    let ready = document.getElementById("ready");
+    let q, l;
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    const context = new AudioContext();
+    let speaking;
+    let options = {};
+    let stopping_time;
+    let transcription;
+    let Content = '';
+    let qs = [];
+
+    //returns ids of 5 random questions
+    function interview_qs(count) {
+
+        while (qs.length < count) {
+            let q = Math.floor(Math.random() * 21) + 1;
+            if (qs.indexOf(q) === -1 && !(qs.includes("q" + q))) qs.push("q" + q);
+        }
+        console.log(qs);
+        return qs;
+    }
+
+    function transcript() {
+        let SpeechRecognition = window.webkitSpeechRecognition;
+        let recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.start();
+        let current;
+        recognition.onresult = function(event) {
+            current = event.resultIndex;
+            transcription = event.results[current][0].transcript;
+            Content += transcription;
+            const regex_repeat = new RegExp(/repeat/, 'i');
+            const regex_ready = new RegExp(/ready|yes/, 'i');
+            if (transcription.match(regex_repeat)) {
+                r.innerText = "true";
+            } else {
+                r.innerText = "false"
+            }
+            if (transcription.match(regex_ready)) {
+                ready.innerText = "true";
+            } else {
+                ready.innerText = "false"
+            }
+            console.log(transcription);
+        }
+    }
+
+    function listen() {
+        navigator.mediaDevices.getUserMedia({
+            audio: true
+        }).then((stream) => {
+            console.log("in stream");
+            const microphone = context.createMediaStreamSource(stream);
+            var speechEvents = hark(stream, options);
+
+            function resume_listening() {
+                microphone.mediaStream.getTracks()[0].enabled = true;
+            }
+
+            function pause_listening() {
+                microphone.mediaStream.getTracks()[0].enabled = false;
+            }
+
+            function Ask() {
+                pause_listening();
+                stop_speech();
+                q = document.getElementById(qs[q_index]);
+                q.addEventListener('ended', listen, false);
+                q.addEventListener('ended', start_speech, false);
+                console.log(qs[q_index]);
+                q.play();
+                q.setAttribute('class', '');
+            }
+
+            function pause() {
+                if (Math.abs(Date.now() - stopping_time) >= 1500 && speaking === false) {
+                    speechEvents.stop();
+                    console.log("finished answering this question");
+                    stop_fer();
+                    if (q_index === -1) {
+                        if (ready.textContent === "false") {
+                            end();
+                            listen().close();
+                        }
+                    }
+                    if (r.textContent === "true") {
+                        r.innerText = "false";
+                    } else
+                        q_index++;
+                    if (q_index >= 5) {
+                        microphone.mediaStream.getTracks()[0].stop();
+                        end();
+                    }
+                    document.getElementById("l" + l_index).setAttribute('class', 'hidden');
+                    Ask();
+                    start_fer();
+                }
+            }
+
+            function get_speaking(speechEvents) {
+                resume_listening();
+                speechEvents.on('speaking', function() {
+                    console.log("speaking");
+                    stopping_time = Date.now();
+                    speaking = true;
+                    console.log(l_index);
+                    if (q_index === -1)
+                        document.getElementById("q0").setAttribute('class', 'hidden');
+                    else
+                        document.getElementById(qs[q_index]).setAttribute('class', 'hidden')
+                    document.getElementById("l" + l_index).setAttribute('class', 'hidden');
+                    if (l_index < l_count)
+                        l_index++;
+                    else
+                        l_index = 1;
+                    console.log(l_index)
+                    l = document.getElementById("l" + l_index);
+                    l.addEventListener('ended', get_speaking, false);
+                    l.play();
+                    l.setAttribute('class', '');
+                });
+                speechEvents.on('stopped_speaking', function() {
+                    console.log("stop");
+                    speaking = false;
+                    stopping_time = Date.now();
+                    setTimeout(pause, 2000);
+                });
+            }
+
+            get_speaking(speechEvents);
+        });
+    }
+
+    function start() {
+        q0.addEventListener('ended', listen, false);
+        q0.addEventListener('ended', transcript, false);
+        start_posture();
+        q0.play();
+        q0.setAttribute('class', '');
+
+    }
+
+    function playPause() {
+        start_eye();
+        qs = interview_qs(5);
+        qs2flask();
+        start_record();
+        start();
+    }
+</script>
+
+</html>

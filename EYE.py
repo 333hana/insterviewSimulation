@@ -11,17 +11,15 @@ import numpy as np
 from unittest.main import main
 from numpy import size
 import cv2
-from requests import session
 import dlib
 from scipy.spatial import distance as dist
-#from torch import seed
-#from eye_detection import *
 import eye_detection
 from gaze_tracking import GazeTracking
 import stopwatch
+import keyboard
 
 stop_eye = False
-dict ={}
+res ={}
 class EYE():
     def __init__(self,cap):
     # to detect the facial region
@@ -41,25 +39,28 @@ class EYE():
      self.time_puse= time.time() - self.session_start
      self.cap = cap
 
+
     def gaze_blinking_function(self):
-     global stop_eye  
-     stop_eye = False
+     #global stop_eye  
+     #stop_eye = False
      while not(stop_eye):
     # We get a new frame from the webcam
-      _, frame = self.cap.read()
+      ret = False
+      while(not(ret)):
+          ret,self.frame = self.cap.read()
+      print("out")
    
     # We send this frame to GazeTracking to analyze it
+      self.gaze.refresh(self.frame)
 
-      self.gaze.refresh(frame)
-
-      frame = self.gaze.annotated_frame()
+      self.frame = self.gaze.annotated_frame()
       text = "" 
        # convert the frame to grayscale
-      gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+      gray = cv2.cvtColor(self.frame, cv2.COLOR_BGR2GRAY)
       rects = self.detector(gray, 0) 
       for rect in rects:
         # get the facial landmarks
-        landmarks = np.matrix([[p.x, p.y] for p in self.predictor(frame, rect).parts()])
+        landmarks = np.matrix([[p.x, p.y] for p in self.predictor(self.frame, rect).parts()])
             # get the left eye landmarks
         left_eye = landmarks[self.LEFT_EYE_POINTS]
             # get the right eye landmarks
@@ -95,22 +96,32 @@ class EYE():
       elif self.gaze.is_center():
          text = "Looking center"#running
          self.timer.resume()
-         self.time_puse= time.time() - self.time_puse      
-     self.images_eye();
+         self.time_puse= time.time() - self.time_puse   
+      if keyboard.is_pressed ("esc")  :
+          self.images_eye()
+          break   
+     
      #cv2.putText(frame, text, (90, 60), cv2.FONT_HERSHEY_DUPLEX, 1.6, (147, 58, 31), 2)  
        #cv2.imshow("Demo", frame)
     def images_eye(self):
      # if cv2.waitKey(1) == 27:
-      global dict
+      global res
       session_time=time.time()-self.session_start    
       eye_contact= ((self.time_puse)/(session_time))
       eye_contact=(1-eye_contact)*100
+
+      res['eye contact']=eye_contact
+      res['blinks']=self.TOTAL
+      res['session time']=session_time
+
       
       print("session time= "+ str((session_time))+" sec")
       print("time puse ="+ str((self.time_puse))+" sec")            
       print("eye contact ="+str(math.floor(eye_contact) )+" %" )       
       print("Total blinks =  "+str(self.TOTAL))
-      #dict[q]={"eye contact ="+str(math.floor(eye_contact) )+" %","Total blinks =  "+str(self.TOTAL)}
+
+     
+
 
          #break
     #webcam.release()
@@ -120,11 +131,12 @@ class EYE():
         print("ineyestop")
         global stop_eye;
         stop_eye = True
+        self.images_eye();
  
 
 if __name__== "__main__":
     e = EYE(cv2.VideoCapture(0))
-    e.stop()
+    #e.stop()
     e.gaze_blinking_function()
     
 
